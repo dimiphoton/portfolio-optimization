@@ -1,0 +1,7 @@
+{
+    "stocks": ["AAPL", "GOOGL", "MSFT", "AMZN", "FB", "TSLA", "NFLX", "NVDA", "PYPL", "ADBE"],
+    "start_date": "2020-01-01",
+    "end_date": "2022-01-01",
+    "interval": "1d",
+    "forecast_period": 365
+}
