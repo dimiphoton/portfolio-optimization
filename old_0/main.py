@@ -10,7 +10,7 @@ def main():
     with open("config.json") as f:
         config = json.load(f)
 
-    # Create instances of the classes
+    # Create instances of the classesx
     data_handler = DataHandler(config)
     optimizer = PortfolioOptimizer(config)
     modeler = TimeSeriesModeler(config)
