@@ -1,5 +1,9 @@
 \data
 \misc
+\old_0
+\old_1
+\old_2
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
