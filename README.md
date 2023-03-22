@@ -13,7 +13,7 @@ In MPT, an efficient portfolio is one that maximizes expected return for a given
 
 The modern concept of portfolio optimization was first introduced by Harry Markowitz in 1952 in his seminal paper "Portfolio Selection". Markowitz's work laid the foundation for MPT and earned him the Nobel Memorial Prize in Economic Sciences in 1990.
 
-Have a look on the Glossary !:
+[Have a look on the Glossary :](glossary.md)
 
 
 ## 🚀 About Me
