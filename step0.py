@@ -15,10 +15,11 @@ def download_and_save_stock_data(stock_name: str, start_date: str = DEFAULT_STAR
     :param start_date: Start date for downloading stock data.
     :param end_date: End date for downloading stock data.
     """
-    stock = yf.Ticker(stock_name)
-    stock_data = stock.history(start=start_date, end=end_date)
-    print(stock_data)
-    stock_data = stock_data[['Date', 'Adj Close']]  # Select only the 'Date' and 'Adj Close' columns
+    print(stock_name)
+    stock_data = yf.download(stock_name, start=DEFAULT_START_DATE, end=DEFAULT_END_DATE)
+        # Extract the date and adjusted close price columns
+    stock_data = stock_data[['Adj Close']]
+
     directory = os.path.join(DATA_PATH, stock_name)
 
     if not os.path.exists(directory):
@@ -31,4 +32,4 @@ def download_and_save_stock_data(stock_name: str, start_date: str = DEFAULT_STAR
 
 if __name__ == "__main__":
     for key,value in company_dict.items():
-        print(key)
+        download_and_save_stock_data(key)
