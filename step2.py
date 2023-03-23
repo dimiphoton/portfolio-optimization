@@ -15,7 +15,7 @@ pd.options.display.float_format = '{:.4%}'.format
 
 def download_data(assets: list, start: str, end: str, forecasted: bool = False) -> pd.DataFrame:
     """
-    Download historical price data for the given assets.
+    Download forecasted or historical price data for the given assets.
     """
     if forecasted:
         data = pd.DataFrame()
@@ -89,4 +89,5 @@ if __name__ == '__main__':
     weights = build_portfolio(returns, equal_weights=equal_weights)
 
     # Plot portfolio repartition
-    plot_portfolio_repartition(weights, start=start_date, end=end_date
+    plot_portfolio_repartition(weights, start=start_date, end=end_date, forecasted=forecasted_data, show=True, save=True)
+
