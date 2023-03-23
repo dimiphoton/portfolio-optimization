@@ -1,37 +1,37 @@
+import pickle
 import os
-from typing import Tuple
+from typing import Type, Tuple
 import pandas as pd
-import matplotlib.pyplot as plt
 from prophet import Prophet
-
-from constants import DATA_PATH, FIGURE_PATH, FORECAST_PATH
+import matplotlib.pyplot as plt
+from constants import DATA_PATH, FORECAST_PATH, FIGURE_PATH
 
 def load_csv(stock_name: str, forecaster: bool = False) -> pd.DataFrame:
     """
     Load historical stock data from a CSV file.
-    
+
     Args:
         stock_name (str): Name of the stock to load data for.
         forecaster (bool, optional): If True, load data from the forecasted_data directory. Otherwise, load data from the data directory. Default is False.
-    
+
     Returns:
         pd.DataFrame: A pandas DataFrame containing the historical stock data.
     """
     # Determine the path to the data directory.
     path = FORECAST_PATH if forecaster else DATA_PATH
-    
+
     # Construct the path to the CSV file.
     directory = os.path.join(path, stock_name)
     file_path = os.path.join(directory, "stock_data.csv")
-    
+
     # Parse the date column and load the CSV file as a DataFrame.
     date_parser = lambda x: pd.to_datetime(x, utc=True)
     df = pd.read_csv(file_path, parse_dates=['Date'], date_parser=date_parser)
-    
+
     # Rename columns and localize the date column to None.
     df = df.rename(columns={'Date': 'ds', 'Adj Close': 'y'})
     df['ds'] = df['ds'].dt.tz_localize(None)
-    
+
     return df
 
 
@@ -55,8 +55,13 @@ def fit_model(stock_name: str, save: bool = False, model: Type[Prophet] = Prophe
     if save:
         path = FORECAST_PATH if forecaster else DATA_PATH
         directory = os.path.join(path, stock_name)
-        model.save(os.path.join(directory, 'prophet_model.pkl'))
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        model_path = os.path.join(directory, 'prophet_model.pkl')
+        with open(model_path, 'wb') as f:
+            pickle.dump(model, f)
     return model
+
 
 
 
@@ -134,9 +139,6 @@ def forecast(stock_name: str, model: Prophet, horizon: int, forecaster: bool = F
     return forecast[['ds', 'yhat']], forecast[['ds', 'yhat_lower', 'yhat_upper']]
 
 
-import os
-import pandas as pd
-import matplotlib.pyplot as plt
 
 
 def plot_forecast(stock_name: str, forecast: pd.DataFrame, ci: pd.DataFrame, save: bool = True, show: bool = True) -> None:
@@ -173,7 +175,7 @@ def plot_forecast(stock_name: str, forecast: pd.DataFrame, ci: pd.DataFrame, sav
 
     # Save the plot to a file if requested
     if save:
-        path = "forecasts"
+        path = FORECAST_PATH
         directory = os.path.join(path, stock_name)
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -184,3 +186,19 @@ def plot_forecast(stock_name: str, forecast: pd.DataFrame, ci: pd.DataFrame, sav
     if show:
         plt.show()
 
+
+if __name__ == '__main__':
+    # Set the stock name
+    stock_name = 'AAPL'
+
+    # Fit the model
+    model = fit_model(stock_name, save=True, forecaster=False)
+
+    # Plot the training set accuracy and save the plot
+    plot_training_accuracy(stock_name, model, save=True, show=True, forecaster=False)
+
+    # Make a forecast for the next 365 days
+    forecast_df, ci_df = forecast(stock_name, model, horizon=30, forecaster=False)
+
+    # Plot the forecast and save the plot
+    plot_forecast(stock_name, forecast_df, ci_df, save=True, show=True)

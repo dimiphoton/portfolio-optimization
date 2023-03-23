@@ -11,7 +11,8 @@
   - [Alpha](###alpha)
   - [Beta](###beta)
   - [Sharpe Ratio](###sharpe-ratio)
-  - [Standard Deviation](###standard-deviation)
+  - [Sortino Ratio](###sortino-ratio)
+  - [Standard Deviation/Volatility](###standard-deviation)
 - Optimization Techniques
   - [Efficient Frontier](###efficient-frontier)
   - [Markowitz Optimization](###markowitz-optimization)
@@ -49,7 +50,11 @@ Beta is a measure of the sensitivity of an investment's returns to changes in th
 
 Sharpe Ratio is a measure of risk-adjusted return that adjusts an investment's return for the level of risk taken. The Sharpe Ratio is calculated by subtracting the risk-free rate of return from the investment's return and dividing the result by the investment's standard deviation. Ahigher Sharpe Ratio indicates a better risk-adjusted return.
 
-### Standard Deviation
+### Sortino Ratio
+
+The Sortino Ratio is a variation of the Sharpe Ratio that considers only downside risk. It compares the historical return of an investment to the amount of downside risk taken to achieve that return. The Sortino Ratio is calculated by subtracting the risk-free rate of return from the historical return of the investment and dividing the result by the investment's downside deviation. A higher Sortino Ratio indicates a better risk-adjusted return that accounts for downside risk.
+
+### Standard Deviation/Volatility
 
 Standard deviation is a measure of the volatility of an investment's returns. It measures the degree to which an investment's returns deviate from its average return. A higher standard deviation indicates greater volatility and risk.
 

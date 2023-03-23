@@ -3,8 +3,9 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 import warnings
-from typing import Dict, Union
 import matplotlib.pyplot as plt
+import riskfolio as rp
+from typing import Dict, Union
 
 from step1 import load_csv
 from constants import DATA_PATH, FORECAST_PATH, FIGURE_PATH, company_dict
@@ -13,6 +14,9 @@ warnings.filterwarnings("ignore")
 pd.options.display.float_format = '{:.4%}'.format
 
 def download_data(assets: list, start: str, end: str, forecasted: bool = False) -> pd.DataFrame:
+    """
+    Download historical price data for the given assets.
+    """
     if forecasted:
         data = pd.DataFrame()
         for asset in assets:
@@ -28,22 +32,34 @@ def download_data(assets: list, start: str, end: str, forecasted: bool = False) 
     return data
 
 def calculate_returns(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calculate the percentage returns of the assets.
+    """
     return data.pct_change().dropna()
 
-def initialize_weights(assets: list, equal_weights: bool = False) -> Dict[str, float]:
+def build_portfolio(returns: pd.DataFrame, equal_weights: bool = True) -> pd.DataFrame:
+    """
+    Build a portfolio object using the given returns and set the initial weights.
+    """
+    portfolio = rp.Portfolio(returns=returns)
+    
     if equal_weights:
-        num_assets = len(assets)
-        return {asset: 1/num_assets for asset in assets}
+        num_assets = len(returns.columns)
+        weights = pd.Series({asset: 1/num_assets for asset in returns.columns})
     else:
         # User can initialize the weights here
-        return {asset: 1/len(assets) for asset in assets}
+        weights = pd.Series({asset: 1/len(returns.columns) for asset in returns.columns})
 
-def plot_portfolio_repartition(weights: Dict[str, float], start: str, end: str, forecasted: bool = True, show: bool = True, save: bool = True) -> None:
-    w = pd.Series(weights)
+    return weights
+
+def plot_portfolio_repartition(weights: pd.Series, start: str, end: str, forecasted: bool = True, show: bool = True, save: bool = True) -> None:
+    """
+    Plot the portfolio repartition as a pie chart.
+    """
     title = 'Portfolio Repartition'
     plot_filename = f"portfolio_repartition_{start}_{end}_{'forecasted' if forecasted else 'original'}.png"
 
-    ax = w.plot.pie(autopct='%.1f%%', figsize=(10, 6), cmap="tab20")
+    ax = weights.plot.pie(autopct='%.1f%%', figsize=(10, 6), cmap="tab20")
     ax.set_title(title)
     ax.set_ylabel("")
 
@@ -52,7 +68,6 @@ def plot_portfolio_repartition(weights: Dict[str, float], start: str, end: str, 
         plt.savefig(plot_path)
     if show:
         plt.show()
-
 
 if __name__ == '__main__':
     # User settings
@@ -70,8 +85,8 @@ if __name__ == '__main__':
     # Calculate returns
     returns = calculate_returns(data)
 
-    # Initialize weights
-    weights = initialize_weights(assets, equal_weights=equal_weights)
+    # Build portfolio and initialize weights
+    weights = build_portfolio(returns, equal_weights=equal_weights)
 
     # Plot portfolio repartition
-    plot_portfolio_repartition(weights, start=start_date, end=end_date, forecasted=forecasted_data, show=True, save=True)
+    plot_portfolio_repartition(weights, start=start_date, end=end_date
