@@ -1,5 +1,5 @@
 
-# Portfolio optimizer using pyportfolio
+# Portfolio 
 
 
 A little project to discover, code and present how portfolio optimization
@@ -19,63 +19,27 @@ The modern concept of portfolio optimization was first introduced by Harry Marko
 ## 🚀 About Me
 I'm a physicist willing to use data in the industry
 
-## Installation
+## The task in a nutshell
 
-Install my-project with npm
+### The objective
 
-```bash
-  npm install my-project
-  cd my-project
-```
-    
-## Optimizations
-
-
-my code follows the pyportfolio package and was 
+### The results
 
 
 
-## Used By
-
-This project is used by the following companies:
-
-- Company 1
-- Company 2
-
-
-## Running Tests
-
-To run tests, run the following command
-
-```bash
-  npm run test
-```
-
-
-## Roadmap
+### to do next
+-add bonds, btc, gold
+-add more stocks
+-add stock classification
 
 
 
 
 ## 🛠 Skills
-Python, Machine Learning, SQL, SAS, R, QGIS, POSTGRESQL, statisticsl inference, physics
+Python, Machine Learning
 
 
-## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
-
-
-## Related
-
-Here are some related projects
-
-[Awesome README](https://github.com/matiassingers/awesome-readme)
-
-
-## Screenshots
-
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
 
 
 ## Features
@@ -86,16 +50,9 @@ Here are some related projects
 - Cross platform
 
 
-## Feedback
-
-If you have any feedback, please reach out to us at fake@fake.com
-
-
-# Hi, I'm Katherine! 👋
 
 
 ## 🔗 Links
-[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://katherineoelsner.com/)
+
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/)
-[![twitter](https://img.shields.io/badge/twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/)
 
