@@ -56,12 +56,4 @@ def plot_frontier_area(frontier: pd.DataFrame) -> None:
     plt.show()
 
 if __name__ == '__main__':
-    data = ... # Load data here
-    assets = ... # Define assets here
-    time_horizon = ... # Define time horizon here
-    metric = ... # Define metric here
-
-    returns = calculate_returns(data, assets)
-    portfolio = build_portfolio(returns)
-    estimate_assets_stats(portfolio)
-    weights = optimize_portfolio(portfolio,
+    pass

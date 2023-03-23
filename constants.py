@@ -2,9 +2,9 @@
 
 DEFAULT_START_DATE = "2008-01-01"
 DEFAULT_END_DATE = "2023-03-20"
-DATA_PATH = '../data/original/'
-FORECAST_PATH = '../data/forecasted/'
-FIGURE_PATH = '../figures'
+DATA_PATH = './data/original/'
+FORECAST_PATH = './data/forecasted/'
+FIGURE_PATH = './figures'
 
 company_dict = {
     'AAPL': 'Apple Inc.',

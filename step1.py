@@ -35,7 +35,7 @@ def load_csv(stock_name: str, forecaster: bool = False) -> pd.DataFrame:
     return df
 
 
-def fit_model(stock_name: str, save: bool = False, model: Type[Prophet] = Prophet, forecaster: bool = False) -> Prophet:
+def fit_model(stock_name: str, save: bool = False) -> Prophet:
     """
     Fit a Prophet model to the stock data for a given stock name.
 
@@ -49,11 +49,11 @@ def fit_model(stock_name: str, save: bool = False, model: Type[Prophet] = Prophe
         Prophet: The fitted Prophet model.
 
     """
-    df = load_csv(stock_name, forecaster)
-    model = model()
+    df = load_csv(stock_name, forecaster=False)
+    model = Prophet()
     model.fit(df)
     if save:
-        path = FORECAST_PATH if forecaster else DATA_PATH
+        path = DATA_PATH
         directory = os.path.join(path, stock_name)
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -62,16 +62,40 @@ def fit_model(stock_name: str, save: bool = False, model: Type[Prophet] = Prophe
             pickle.dump(model, f)
     return model
 
+def load_model(stock_name: str):
+    """
+    Load a saved Prophet model from a pickle file.
+
+    Args:
+        stock_name (str): The name of the stock to load the model for.
+        model_name (str): The name of the saved model file.
+        forecaster (bool, optional): If True, load the model from the forecasted_data directory. Otherwise, load the model from the data directory. Default is False.
+
+    Returns:
+        Prophet: The loaded  model (Prophet by defaut).
+    """
+    # Determine the path to the data directory.
+    path = DATA_PATH
+
+    # Construct the path to the model file.
+    directory = os.path.join(path, stock_name)
+    model_name='prophet'
+    model_path = os.path.join(directory, f"{model_name}_model.pkl")
+
+    # Load the model from the pickle file.
+    with open(model_path, 'rb') as f:
+        model = pickle.load(f)
+
+    return model
 
 
-
-def plot_training_accuracy(stock_name: str, model: Prophet, save: bool = True, show: bool = True, forecaster: bool = False) -> None:
+def plot_training_accuracy(stock_name: str, save: bool = True, show: bool = True, forecaster: bool = False) -> None:
     """
     Plot and display the training set accuracy of the given stock's Prophet model.
 
     Args:
     - stock_name (str): Name of the stock for which data is to be loaded.
-    - model (Prophet): Prophet model trained on the given stock's data.
+    - model_name (str): The name of the saved model file.
     - save (bool): Whether to save the plot or not. Default is True.
     - show (bool): Whether to display the plot or not. Default is True.
     - forecaster (bool): Whether the function is called by the forecaster or not.
@@ -80,6 +104,9 @@ def plot_training_accuracy(stock_name: str, model: Prophet, save: bool = True, s
     Returns:
     - None
     """
+    # Load the model
+    model = load_model(stock_name)
+
     # Load the stock data
     df = load_csv(stock_name, forecaster)
 
@@ -106,7 +133,8 @@ def plot_training_accuracy(stock_name: str, model: Prophet, save: bool = True, s
     if show:
         plt.show()
 
-def forecast(stock_name: str, model: Prophet, horizon: int, forecaster: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
+
+def forecast(stock_name: str, horizon: int,save=False):
     """
     Forecast the stock price using the Prophet model.
     
@@ -122,26 +150,29 @@ def forecast(stock_name: str, model: Prophet, horizon: int, forecaster: bool = F
                                            - The first dataframe contains the forecasted values for the next `horizon` periods.
                                            - The second dataframe contains the lower and upper bounds of the forecast.
     """
+    model=load_model(stock_name)
     # Create future dates for forecasting
     future = model.make_future_dataframe(periods=horizon)
     # Forecast future stock prices using the model
     forecast = model.predict(future)
 
     # Save forecast to a file
-    path = FORECAST_PATH if forecaster else DATA_PATH
-    directory = os.path.join(path, 'forecasted')
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    forecast_path = os.path.join(directory, f"{stock_name}.csv")
-    forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(horizon).to_csv(forecast_path, index=False)
+    if save:
+        path = FORECAST_PATH
+        directory = os.path.join(path, stock_name)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        forecast_path = os.path.join(directory, "stock_data.csv")
+        print('saved in: '+str(forecast_path))
+        forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(horizon).to_csv(forecast_path, index=False)
     
-    # Return the forecasted values and the lower/upper bounds
-    return forecast[['ds', 'yhat']], forecast[['ds', 'yhat_lower', 'yhat_upper']]
+    return forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(horizon)
 
 
 
 
-def plot_forecast(stock_name: str, forecast: pd.DataFrame, ci: pd.DataFrame, save: bool = True, show: bool = True) -> None:
+
+def plot_forecast(stock_name: str, forecast: pd.DataFrame, save: bool = True, show: bool = True) -> None:
     """
     Plots the forecasted values and the associated confidence intervals.
 
@@ -153,21 +184,14 @@ def plot_forecast(stock_name: str, forecast: pd.DataFrame, ci: pd.DataFrame, sav
             Defaults to True.
         show (bool, optional): Whether to display the plot on screen. Defaults to True.
 
-    Raises:
-        ValueError: If any of the required columns is missing in either the forecast or ci dataframes.
-
     Returns:
         None
     """
     # Check if the required columns are present
-    if not set(['ds', 'yhat']).issubset(forecast.columns):
-        raise ValueError("Forecast dataframe must have 'ds' and 'yhat' columns")
-    if not set(['ds', 'yhat_lower', 'yhat_upper']).issubset(ci.columns):
-        raise ValueError("Confidence interval dataframe must have 'ds', 'yhat_lower' and 'yhat_upper' columns")
 
     # Plot the forecast and confidence intervals
     plt.plot(forecast['ds'], forecast['yhat'], label='Predicted')
-    plt.fill_between(ci['ds'], ci['yhat_lower'], ci['yhat_upper'], alpha=0.2)
+    plt.fill_between(forecast['ds'], forecast['yhat_lower'], forecast['yhat_upper'], alpha=0.2)
     plt.legend()
     plt.title(f"Forecast for {stock_name}")
     plt.xlabel('Date')
@@ -195,10 +219,10 @@ if __name__ == '__main__':
     model = fit_model(stock_name, save=True, forecaster=False)
 
     # Plot the training set accuracy and save the plot
-    plot_training_accuracy(stock_name, model, save=True, show=True, forecaster=False)
+    plot_training_accuracy(stock_name, save=True, show=True, forecaster=False)
 
     # Make a forecast for the next 365 days
-    forecast_df, ci_df = forecast(stock_name, model, horizon=30, forecaster=False)
+    forecast_df, ci_df = forecast(stock_name, horizon=30, forecaster=False)
 
     # Plot the forecast and save the plot
     plot_forecast(stock_name, forecast_df, ci_df, save=True, show=True)
