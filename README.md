@@ -1,8 +1,8 @@
 
-# Portfolio 
+# Portfolio optimization experiment
 
 
-A little project to discover, code and present how portfolio optimization
+A little project to discover, code and present how portfolio optimization works.
 
 
 ## what is this project about ?
@@ -21,13 +21,29 @@ I'm a physicist willing to use data in the industry
 
 ## The task in a nutshell
 
+the task is to be able to automate a portfolio balancing.
+
 ### The objective
 
+use a portfolio optimization framework(here pyportfolio-lib) and time serie forecasting frameworks (here Facebook Prophet)
 ### The results
 
+the portfolio automatation is ready. THe code consists in 5 scripts:
+-constants.py: constants used for data and list of companies
+-step0.py: collecting data
+-step1.py: apply forecating model
+-step2.py: apply portfolio optimization
+-step3.py: apply portfolio rebalancing
+
+some figures:
+
+![an efficient frontier plot](/run/user/1000/doc/869532bf/efficient_frontier_plot.png)
+
+![](/run/user/1000/doc/2bbc375b/efficient_frontier_assets.png)
 
 
 ### to do next
+-do experiments: is this balancing process usefull? how much?
 -add bonds, btc, gold
 -add more stocks
 -add stock classification
@@ -36,18 +52,7 @@ I'm a physicist willing to use data in the industry
 
 
 ## 🛠 Skills
-Python, Machine Learning
-
-
-
-
-
-## Features
-
-- Light/dark mode toggle
-- Live previews
-- Fullscreen mode
-- Cross platform
+Python frameworks reading, modularization
 
 
 
