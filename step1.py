@@ -17,20 +17,32 @@ def load_csv(stock_name: str, forecaster: bool = False) -> pd.DataFrame:
     Returns:
         pd.DataFrame: A pandas DataFrame containing the historical stock data.
     """
-    # Determine the path to the data directory.
-    path = FORECAST_PATH if forecaster else DATA_PATH
+    if forecaster:
+        path = FORECAST_PATH 
 
-    # Construct the path to the CSV file.
-    directory = os.path.join(path, stock_name)
-    file_path = os.path.join(directory, "stock_data.csv")
+        # Construct the path to the CSV file.
+        directory = os.path.join(path, stock_name)
+        file_path = os.path.join(directory, "stock_data.csv")
 
-    # Parse the date column and load the CSV file as a DataFrame.
-    date_parser = lambda x: pd.to_datetime(x, utc=True)
-    df = pd.read_csv(file_path, parse_dates=['Date'], date_parser=date_parser)
+        df = pd.read_csv(file_path)
 
-    # Rename columns and localize the date column to None.
-    df = df.rename(columns={'Date': 'ds', 'Adj Close': 'y'})
-    df['ds'] = df['ds'].dt.tz_localize(None)
+        # Rename columns and localize the date column to None.
+        df = df.rename(columns={'yhat': 'y'})
+        df = df[['ds','y']]
+    else:
+        path = DATA_PATH
+
+        # Construct the path to the CSV file.
+        directory = os.path.join(path, stock_name)
+        file_path = os.path.join(directory, "stock_data.csv")
+
+        # Parse the date column and load the CSV file as a DataFrame.
+        date_parser = lambda x: pd.to_datetime(x, utc=True)
+        df = pd.read_csv(file_path, parse_dates=['Date'], date_parser=date_parser)
+
+        # Rename columns and localize the date column to None.
+        df = df.rename(columns={'Date': 'ds', 'Adj Close': 'y'})
+        df['ds'] = df['ds'].dt.tz_localize(None)
 
     return df
 
