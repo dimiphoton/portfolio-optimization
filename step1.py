@@ -4,7 +4,7 @@ from typing import Type, Tuple
 import pandas as pd
 from prophet import Prophet
 import matplotlib.pyplot as plt
-from constants import DATA_PATH, FORECAST_PATH, FIGURE_PATH
+from constants import DATA_PATH, FORECAST_PATH, FIGURE_PATH, company_dict
 
 def load_csv(stock_name: str, forecaster: bool = False) -> pd.DataFrame:
     """
@@ -224,17 +224,11 @@ def plot_forecast(stock_name: str, forecast: pd.DataFrame, save: bool = True, sh
 
 
 if __name__ == '__main__':
-    # Set the stock name
-    stock_name = 'AAPL'
-
-    # Fit the model
-    model = fit_model(stock_name, save=True, forecaster=False)
-
-    # Plot the training set accuracy and save the plot
-    plot_training_accuracy(stock_name, save=True, show=True, forecaster=False)
-
-    # Make a forecast for the next 365 days
-    forecast_df, ci_df = forecast(stock_name, horizon=30, forecaster=False)
-
-    # Plot the forecast and save the plot
-    plot_forecast(stock_name, forecast_df, ci_df, save=True, show=True)
+    for stock in company_dict.keys():
+        print('Training model for '+str(stock))
+        fit_model(stock,save=True)
+        print('Forecasting 180 days of '+str(stock))
+        forecast = forecast(stock, horizon=180)
+        print('Plotting forecast for '+str(stock))
+        plot_forecast(stock, forecast)
+        print('Done for '+str(stock))
