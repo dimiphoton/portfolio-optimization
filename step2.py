@@ -13,16 +13,14 @@ from constants import DATA_PATH, FORECAST_PATH, FIGURE_PATH, company_dict
 warnings.filterwarnings("ignore")
 pd.options.display.float_format = '{:.4%}'.format
 
-def download_data(assets: list, start: str, end: str, forecasted: bool = False) -> pd.DataFrame:
+def read_data(assets: list, forecasted: bool = True) -> pd.DataFrame:
     """
-    Download forecasted or historical price data for the given assets.
+    Download forecasted or historical price data for several assets.
     """
     if forecasted:
         data = pd.DataFrame()
         for asset in assets:
-            df = load_csv(asset, forecaster=True)
-            df = df[(df['ds'] >= start) & (df['ds'] <= end)]
-            data = pd.concat([data, df.set_index('ds')['y']], axis=1)
+            df = load_csv(asset, forecasted)
         data.columns = assets
     else:
         data = yf.download(assets, start=start, end=end)
@@ -31,11 +29,14 @@ def download_data(assets: list, start: str, end: str, forecasted: bool = False) 
 
     return data
 
-def calculate_returns(data: pd.DataFrame) -> pd.DataFrame:
+def calculate_returns(data: pd.DataFrame,forecasted=True) -> pd.DataFrame:
     """
     Calculate the percentage returns of the assets.
     """
-    return data.pct_change().dropna()
+    if forecasted:
+        return data['yhat'].pct_change().dropna()
+    else:
+        return data['y'].pct_change().dropna()
 
 def build_portfolio(returns: pd.DataFrame, equal_weights: bool = True) -> pd.DataFrame:
     """
