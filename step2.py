@@ -15,28 +15,22 @@ pd.options.display.float_format = '{:.4%}'.format
 
 def read_data(assets: list, forecasted: bool = True) -> pd.DataFrame:
     """
-    Download forecasted or historical price data for several assets.
+    Download forecasted or historical price data for several assets and creates an aggregated dataframe.
     """
-    if forecasted:
-        data = pd.DataFrame()
-        for asset in assets:
-            df = load_csv(asset, forecasted)
-        data.columns = assets
-    else:
-        data = yf.download(assets, start=start, end=end)
-        data = data.loc[:, ('Adj Close', slice(None))]
-        data.columns = assets
+    aggregated=pd.DataFrame()
+    for stock in assets:
+        temp=load_csv(stock,forecasted)
+        if forecasted:
+            aggregated[stock]=temp['yhat']
+        else:
+            aggregated[stock]=temp['y']
 
-    return data
-
-def calculate_returns(data: pd.DataFrame,forecasted=True) -> pd.DataFrame:
+def calculate_returns(data: pd.DataFrame) -> pd.DataFrame:
     """
     Calculate the percentage returns of the assets.
     """
-    if forecasted:
-        return data['yhat'].pct_change().dropna()
-    else:
-        return data['y'].pct_change().dropna()
+
+    return data.pct_change().dropna()
 
 def build_portfolio(returns: pd.DataFrame, equal_weights: bool = True) -> pd.DataFrame:
     """
@@ -51,7 +45,7 @@ def build_portfolio(returns: pd.DataFrame, equal_weights: bool = True) -> pd.Dat
         # User can initialize the weights here
         weights = pd.Series({asset: 1/len(returns.columns) for asset in returns.columns})
 
-    return weights
+    portfolio
 
 def plot_portfolio_repartition(weights: pd.Series, start: str, end: str, forecasted: bool = True, show: bool = True, save: bool = True) -> None:
     """
